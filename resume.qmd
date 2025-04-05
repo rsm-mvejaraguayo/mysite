@@ -1,5 +1,7 @@
 ---
-title: "About"
+title: "Mariana's Resume"
 ---
 
-About this site
+_Last updated 2025-04-05_
+
+{{< pdf other_documents/PM Resume.pdf width=100% height=800 >}}
