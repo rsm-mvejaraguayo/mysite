@@ -1,0 +1,15 @@
+---
+title: "Mariana Vejar"
+image: "images/idpic.png"
+about:
+    template: jolla
+    links:
+      - icon: envelope
+        href: mailto:marianavejara@gmail.com
+      - icon: linkedin
+        href: https://www.linkedin.com/in/mariana-vejar-aguayo-6903aa157/
+---
+
+This is a Quarto website.
+
+To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
