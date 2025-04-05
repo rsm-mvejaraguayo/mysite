@@ -1,0 +1,13 @@
+---
+title: Homework 1
+author: Mariana Vejar
+---
+
+# Question 1
+
+Prof says make a chart. 
+
+
+```{python}
+x = 4 + 4
+```
