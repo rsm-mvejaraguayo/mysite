@@ -1,0 +1,37 @@
+---
+title: Homework 2
+author: Mariana Vejar
+date: 2025-04-11
+format: html
+---
+
+# Question 2
+
+Trying 
+
+
+```{python}
+import plotly.graph_objs as go
+from plotly.offline import plot
+
+
+x = [1, 2, 3, 4, 5]
+y = [10, 14, 18, 24, 30]
+
+trace = go.Scatter(
+    x=x,
+    y=y,
+    mode='markers+lines',
+    name='Data Points'
+)
+
+layout = go.Layout(
+    title='Simple Scatter Plot',
+    xaxis=dict(title='X Axis'),
+    yaxis=dict(title='Y Axis')
+)
+
+fig = go.Figure(data=[trace], layout=layout)
+plot(fig)
+
+```

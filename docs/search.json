@@ -7,6 +7,13 @@
     "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
   },
   {
+    "objectID": "projects/hw1/index.html",
+    "href": "projects/hw1/index.html",
+    "title": "Homework 1",
+    "section": "",
+    "text": "Question 1\nProf says make a chart.\n\nx = 4 + 4"
+  },
+  {
     "objectID": "resume.html",
     "href": "resume.html",
     "title": "Mariana’s Resume",
@@ -18,13 +25,13 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "Homework 1\n\n\n\n\nMariana Vejar\n\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Homework 1\n\n\n\n\nMariana Vejar\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHomework 2\n\n\n\n\nMariana Vejar\nApr 11, 2025\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "projects/hw1/index.html",
-    "href": "projects/hw1/index.html",
-    "title": "Homework 1",
+    "objectID": "projects/hw2/index.html",
+    "href": "projects/hw2/index.html",
+    "title": "Homework 2",
     "section": "",
-    "text": "Question 1\nProf says make a chart.\n\nx = 4 + 4"
+    "text": "Question 2\nTrying\n\nimport plotly.graph_objs as go\nfrom plotly.offline import plot\n\n\nx = [1, 2, 3, 4, 5]\ny = [10, 14, 18, 24, 30]\n\ntrace = go.Scatter(\n    x=x,\n    y=y,\n    mode='markers+lines',\n    name='Data Points'\n)\n\nlayout = go.Layout(\n    title='Simple Scatter Plot',\n    xaxis=dict(title='X Axis'),\n    yaxis=dict(title='Y Axis')\n)\n\nfig = go.Figure(data=[trace], layout=layout)\nplot(fig)\n\n'temp-plot.html'"
   }
 ]
