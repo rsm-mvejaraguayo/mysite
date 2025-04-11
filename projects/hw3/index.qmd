@@ -1,0 +1,5 @@
+---
+title: Homework 3
+author: Mariana Vejar
+date: 2025-04-11
+---
