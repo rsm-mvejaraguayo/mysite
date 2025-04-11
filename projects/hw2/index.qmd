@@ -12,8 +12,6 @@ Trying
 
 ```{python}
 import plotly.graph_objs as go
-from plotly.offline import plot
-
 
 x = [1, 2, 3, 4, 5]
 y = [10, 14, 18, 24, 30]
@@ -32,6 +30,8 @@ layout = go.Layout(
 )
 
 fig = go.Figure(data=[trace], layout=layout)
-plot(fig)
+
+fig
+
 
 ```
