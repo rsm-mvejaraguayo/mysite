@@ -8,6 +8,8 @@ about:
         href: mailto:marianavejara@gmail.com
       - icon: linkedin
         href: https://www.linkedin.com/in/mariana-vejar-aguayo-6903aa157/
+      - icon: github
+        href: https://github.com/rsm-mvejaraguayo
 ---
 
 This is a Quarto website.
