@@ -17,6 +17,7 @@ This blog post replicates some of Karlan and List’s main findings using their 
 
 ## Data
 ```{python}
+# | echo: false
 import pandas as pd
 
 df = pd.read_stata("/home/jovyan/Desktop/mysite/projects/hw1/karlan_list_2007.dta")
@@ -102,6 +103,7 @@ This dataset enables a detailed analysis of how price framing and appeal design 
 I assess whether randomization produced statistically similar groups by testing balance on pre-treatment variables. Here we focus on `mrm2`, which captures the number of months since the last donation.
 
 ```{python}
+# | echo: false
 from scipy import stats
 import statsmodels.formula.api as smf
 
@@ -113,6 +115,7 @@ t_stat, p_val
 ```
 
 ```{python}
+# | echo: false
 # Linear regression as a balance check
 balance_model = smf.ols('mrm2 ~ treatment', data=df).fit()
 balance_model.summary().tables[1]
@@ -134,6 +137,7 @@ Table 1 in Karlan & List (2007) serves a similar purpose: it demonstrates that o
 ### Charitable Contribution Made
 
 ```{python}
+# | echo: false
 import matplotlib.pyplot as plt
 
 donation_rates = df.groupby('treatment')['gave'].mean()
@@ -162,6 +166,7 @@ This figure illustrates that the match treatment increased donation rates from 1
 I now test whether the presence of a matching grant increases the probability of giving. This replicates part of Table 2A in the original study.
 
 ```{python}
+# | echo: false
 # T-test
 control_gave = df[df['control'] == 1]['gave']
 treat_gave = df[df['treatment'] == 1]['gave']
@@ -171,6 +176,7 @@ t_stat, p_val
 ```
 
 ```{python}
+# | echo: false
 # Bivariate regression
 import statsmodels.formula.api as smf
 reg = smf.ols('gave ~ treatment', data=df).fit()
@@ -184,6 +190,7 @@ I find that the treatment group is significantly more likely to donate. The regr
 To complement the linear model, we estimate a probit regression to model the likelihood of donation:
 
 ```{python}
+# | echo: false
 import statsmodels.api as sm
 
 X = sm.add_constant(df['treatment'])
@@ -205,6 +212,7 @@ _NOTE: Linear regression results appear replicate Table 3 column 1 in the paper.
 Next, I assess the effectiveness of different sizes of matched donations on the response rate.
 
 ```{python}
+# | echo: false
 # Extract response rates by ratio
 gave_1 = df[(df['treatment'] == 1) & (df['ratio'] == 1)]['gave']
 gave_2 = df[(df['treatment'] == 1) & (df['ratio'] == 2)]['gave']
@@ -224,6 +232,7 @@ The 2:1 and 3:1 match ratios lead to slightly higher donation rates than the 1:1
 I now run a regression using match ratio as a categorical variable (1:1 as the baseline):
 
 ```{python}
+# | echo: false
 match_df = df[df['treatment'] == 1].copy()
 match_df['ratio'] = match_df['ratio'].astype("category")
 match_df['ratio'] = match_df['ratio'].cat.remove_categories(['Control'])
@@ -239,6 +248,7 @@ The estimated donation rate for the 1:1 match is 2.07%. The 2:1 and 3:1 match ra
 I calculate the response rate differences between match ratios both directly and via regression:
 
 ```{python}
+# | echo: false
 rate_1 = gave_1.mean()
 rate_2 = gave_2.mean()
 rate_3 = gave_3.mean()
@@ -263,6 +273,7 @@ Both approaches confirm: the effect of increasing the match ratio is very small 
 In this subsection, I analyze the effect of the size of matched donation on the size of the charitable contribution.
 
 ```{python}
+# | echo: false
 control_amount = df[df['control'] == 1]['amount']
 treatment_amount = df[df['treatment'] == 1]['amount']
 
@@ -272,6 +283,7 @@ stats.ttest_ind(control_amount, treatment_amount, equal_var=False)
 ```
 
 ```{python}
+# | echo: false
 import statsmodels.formula.api as smf
 reg_amt = smf.ols('amount ~ treatment', data=df).fit()
 reg_amt.summary2().tables[1]
@@ -288,6 +300,7 @@ Even if a match doesn't strongly affect how much people give on average, it stil
 Next, I limit our sample to individuals who gave and repeat our analysis.
 
 ```{python}
+# | echo: false
 donors_only = df[df['gave'] == 1]
 
 # T-test
@@ -297,6 +310,7 @@ stats.ttest_ind(control_amt_donors, treat_amt_donors, equal_var=False)
 ```
 
 ```{python}
+# | echo: false
 reg_cond = smf.ols('amount ~ treatment', data=donors_only).fit()
 reg_cond.summary2().tables[1]
 ```
@@ -312,6 +326,7 @@ This aligns with Karlan and List's interpretation that matching is effective at 
 ### Distribution of Donation Amounts Among Donors
 
 ```{python}
+# | echo: false
 import matplotlib.pyplot as plt
 
 donors_control = donors_only[donors_only['control'] == 1]['amount']
@@ -358,6 +373,7 @@ Further suppose that the true distribution of respondents who do get a charitabl
 To demonstrate how the sample average converges to the true treatment effect, I simulate donation behavior under the assumed probabilities (p=0.018 for control, p=0.022 for treatment):
 
 ```{python}
+# | echo: false
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -388,6 +404,7 @@ This chart illustrates the Law of Large Numbers: although the early estimates ar
 We simulate the average treatment effect at sample sizes of 50, 200, 500, and 1000. For each size, we run 1,000 simulations, where we take `n` random draws from both control and treatment distributions and compute the difference in means.
 
 ```{python}
+# | echo: false
 sample_sizes = [50, 200, 500, 1000]
 n_simulations = 1000
 true_control_p = 0.018
