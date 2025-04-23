@@ -385,7 +385,39 @@ This chart illustrates the Law of Large Numbers: although the early estimates ar
 
 ### Central Limit Theorem
 
-_to do: Make 4 histograms at sample sizes 50, 200, 500, and 1000.  To do this for a sample size of e.g. 50, take 50 draws from each of the control and treatment distributions, and calculate the average difference between those draws. Then repeat that process 999 more times so that you have 1000 averages. Plot the histogram of those averages. The repeat for the other 3 histograms. Explain this sequence of histograms and its relationship to the central limit theorem to the reader._
+### Central Limit Theorem
+
+We simulate the average treatment effect at sample sizes of 50, 200, 500, and 1000. For each size, we run 1,000 simulations, where we take `n` random draws from both control and treatment distributions and compute the difference in means.
+
+```{python}
+sample_sizes = [50, 200, 500, 1000]
+n_simulations = 1000
+true_control_p = 0.018
+true_treatment_p = 0.022
+
+fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+axes = axes.flatten()
+
+for i, n in enumerate(sample_sizes):
+    avg_diffs = []
+    for _ in range(n_simulations):
+        control_sample = np.random.binomial(1, true_control_p, n)
+        treatment_sample = np.random.binomial(1, true_treatment_p, n)
+        avg_diffs.append(np.mean(treatment_sample) - np.mean(control_sample))
+    
+    axes[i].hist(avg_diffs, bins=30, edgecolor='black', alpha=0.7)
+    axes[i].axvline(0.004, color='red', linestyle='--', label='True Effect = 0.004')
+    axes[i].set_title(f"Sample Size = {n}")
+    axes[i].set_xlabel("Average Difference")
+    axes[i].set_ylabel("Frequency")
+    axes[i].legend()
+
+plt.tight_layout()
+plt.show()
+```
+
+As the sample size increases, the histogram of simulated differences becomes narrower and more bell-shaped. This is a visual demonstration of the **Central Limit Theorem**, which shows why large sample sizes are critical for accurate statistical inference.
+
 
 
 
