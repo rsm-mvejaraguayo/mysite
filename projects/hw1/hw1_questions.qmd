@@ -385,8 +385,6 @@ This chart illustrates the Law of Large Numbers: although the early estimates ar
 
 ### Central Limit Theorem
 
-### Central Limit Theorem
-
 We simulate the average treatment effect at sample sizes of 50, 200, 500, and 1000. For each size, we run 1,000 simulations, where we take `n` random draws from both control and treatment distributions and compute the difference in means.
 
 ```{python}
