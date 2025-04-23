@@ -23,7 +23,7 @@
         "\n",
         "## Data"
       ],
-      "id": "e133356c"
+      "id": "f999dc3b"
     },
     {
       "cell_type": "code",
@@ -34,7 +34,7 @@
         "df = pd.read_stata(\"data/karlan_list_2007.dta\")\n",
         "df.head()"
       ],
-      "id": "624b2f58",
+      "id": "9444aeb3",
       "execution_count": null,
       "outputs": []
     },
@@ -176,7 +176,7 @@
         "\n",
         "_to do: Make 4 histograms at sample sizes 50, 200, 500, and 1000.  To do this for a sample size of e.g. 50, take 50 draws from each of the control and treatment distributions, and calculate the average difference between those draws. Then repeat that process 999 more times so that you have 1000 averages. Plot the histogram of those averages. The repeat for the other 3 histograms. Explain this sequence of histograms and its relationship to the central limit theorem to the reader._\n"
       ],
-      "id": "26c7d893"
+      "id": "b930d04a"
     }
   ],
   "metadata": {

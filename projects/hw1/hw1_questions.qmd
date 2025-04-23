@@ -19,7 +19,7 @@ This blog post replicates some of Karlan and List’s main findings using their 
 ```{python}
 import pandas as pd
 
-df = pd.read_stata("data/karlan_list_2007.dta")
+df = pd.read_stata("/home/jovyan/Desktop/mysite/projects/hw1/karlan_list_2007.dta")
 df.head()
 ```
 
