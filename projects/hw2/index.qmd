@@ -17,14 +17,84 @@ However, Blueprinty has collected data on 1,500 mature (non-startup) engineering
 
 ### Data
 
-_todo: Read in data._
+```{python, echo=False}
 
-_todo: Compare histograms and means of number of patents by customer status. What do you observe?_
+import pandas as pd
+
+blueprinty = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw2/blueprinty.csv")
+
+blueprinty.info()
+blueprinty.describe()
+
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+
+sns.set(style="whitegrid")
+
+plt.figure(figsize=(10, 6))
+sns.histplot(data=blueprinty, x="patents", hue="iscustomer", bins=30, kde=False, multiple="dodge")
+plt.title("Distribution of Patents by Customer Status")
+plt.xlabel("Number of Patents")
+plt.ylabel("Count")
+plt.legend(title="Is Customer", labels=["Non-Customer", "Customer"])
+plt.tight_layout()
+plt.show()
+
+blueprinty.groupby("iscustomer")["patents"].mean().round(2)
+```
+
+📊 Observations: Patents by Customer Status
+
+Average Patents:
+- Customers have a higher mean number of patents (4.13) than non-customers (3.47).
+- This supports the idea that more prolific inventors are more likely to be customers of Blueprinty.
+
+Distribution Shape:
+- Both groups show a right-skewed distribution, typical of count data.
+- Customers have noticeably higher counts in the upper range, suggesting they are overrepresented among more active inventors.
+
+Interpretation:
+- Blueprinty seems to attract customers with more patents — possibly because those inventors need more assistance with protection, commercialization, or management.
+- This implies that patent count may be predictive of customer status.
 
 Blueprinty customers are not selected at random. It may be important to account for systematic differences in the age and regional location of customers vs non-customers.
 
-_todo: Compare regions and ages by customer status. What do you observe?_
+```{python, echo=False}
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
+blueprinty = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw2/blueprinty.csv")
+
+plt.figure(figsize=(8, 6))
+sns.boxplot(data=blueprinty, x="iscustomer", y="age")
+plt.title("Age Distribution by Customer Status")
+plt.xlabel("Is Customer (0 = No, 1 = Yes)")
+plt.ylabel("Age")
+plt.xticks([0, 1], ["Non-Customer", "Customer"])
+plt.tight_layout()
+plt.show()
+
+blueprinty.groupby("iscustomer")["age"].describe()
+
+region_counts = blueprinty.groupby(["region", "iscustomer"]).size().reset_index(name="count")
+
+plt.figure(figsize=(12, 6))
+sns.barplot(data=region_counts, x="region", y="count", hue="iscustomer")
+plt.title("Customer Status by Region")
+plt.xlabel("Region")
+plt.ylabel("Count")
+plt.legend(title="Is Customer", labels=["Non-Customer", "Customer"])
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+```
+
+🧠 Observations
+The age distribution of customers and non-customers differs slightly. Boxplots indicate that customers tend to be slightly older, with a higher median age. This could reflect greater experience or longer time in the industry.
+
+In terms of region, some areas show a stronger customer presence than others, suggesting regional variation in demand or outreach success. Understanding these patterns could help Blueprinty better target its services geographically.
 
 ### Estimation of Simple Poisson Model
 
