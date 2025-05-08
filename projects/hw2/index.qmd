@@ -183,7 +183,8 @@ beta_hat
 
 Next, we extend our simple Poisson model to a Poisson Regression Model such that $Y_i = \text{Poisson}(\lambda_i)$ where $\lambda_i = \exp(X_i'\beta)$. The interpretation is that the success rate of patent awards is not constant across all firms ($\lambda$) but rather is a function of firm characteristics $X_i$. Specifically, we will use the covariates age, age squared, region, and whether the firm is a customer of Blueprinty.
 
-```{python, echo=False}
+```{python}
+# | echo: false
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import gammaln
@@ -217,7 +218,8 @@ beta_hat = result.x
 beta_hat
 ```
 
-```{python, echo=False}
+```{python}
+# | echo: false
 cov_matrix = result.hess_inv
 standard_errors = np.sqrt(np.diag(cov_matrix))
 
@@ -232,7 +234,8 @@ results_df.round(4)
 
 ```
 
-```{python, echo=False}
+```{python}
+# | echo: false
 import numpy as np
 import pandas as pd
 from scipy.special import gammaln
@@ -307,7 +310,8 @@ AirBnB is a popular platform for booking short-term rentals. In March 2017, stud
 
 ::::
 
-```{python, echo=False}
+```{python}
+# | echo: false
 import pandas as pd
 airbnb = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw2/airbnb.csv")
 
