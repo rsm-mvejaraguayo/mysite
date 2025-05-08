@@ -192,9 +192,13 @@ import statsmodels.api as sm
 from scipy.optimize import minimize
 
 def poisson_log_likelihood(beta, X, y):
-    beta = np.asarray(beta)
-    lambda_ = np.exp(X @ beta)
-    log_likelihood = np.sum(y * (X @ beta) - lambda_ - gammaln(y + 1))
+    beta = np.atleast_1d(np.asarray(beta, dtype=np.float64))
+    X = np.asarray(X, dtype=np.float64)
+    y = np.asarray(y, dtype=np.float64)
+
+    lin_pred = X @ beta
+    lambda_ = np.exp(lin_pred)
+    log_likelihood = np.sum(y * lin_pred - lambda_ - gammaln(y + 1))
     return -log_likelihood
 
 
@@ -205,11 +209,6 @@ X_region = pd.get_dummies(blueprinty["region"], drop_first=True)
 X = pd.concat([blueprinty[["age", "age2", "iscustomer"]], X_region], axis=1)
 X = sm.add_constant(X).values
 y = blueprinty["patents"].values
-
-def poisson_log_likelihood(beta, X, y):
-    lambda_ = np.exp(X @ beta)
-    log_likelihood = np.sum(y * (X @ beta) - lambda_ - gammaln(y + 1))
-    return -log_likelihood
 
 beta_init = np.zeros(X.shape[1])
 result = minimize(poisson_log_likelihood, beta_init, args=(X, y), method="BFGS")

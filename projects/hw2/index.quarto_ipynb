@@ -23,7 +23,7 @@
         "\n",
         "### Data"
       ],
-      "id": "c7df7184"
+      "id": "f155983f"
     },
     {
       "cell_type": "code",
@@ -53,7 +53,7 @@
         "\n",
         "blueprinty.groupby(\"iscustomer\")[\"patents\"].mean().round(2)"
       ],
-      "id": "d2f52a8a",
+      "id": "ac70c7b6",
       "execution_count": null,
       "outputs": []
     },
@@ -77,7 +77,7 @@
         "\n",
         "Blueprinty customers are not selected at random. It may be important to account for systematic differences in the age and regional location of customers vs non-customers."
       ],
-      "id": "066652f9"
+      "id": "3081245f"
     },
     {
       "cell_type": "code",
@@ -112,7 +112,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "af41cfac",
+      "id": "a2fa1556",
       "execution_count": null,
       "outputs": []
     },
@@ -129,7 +129,7 @@
         "\n",
         "Since our outcome variable of interest can only be small integer values per a set unit of time, we can use a Poisson density to model the number of patents awarded to each engineering firm over the last 5 years. We start by estimating a simple Poisson model via Maximum Likelihood.\n"
       ],
-      "id": "ec28b9a7"
+      "id": "17e19203"
     },
     {
       "cell_type": "code",
@@ -159,7 +159,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "0bf5bc52",
+      "id": "0293b101",
       "execution_count": null,
       "outputs": []
     },
@@ -215,7 +215,7 @@
         "beta_hat = result.x\n",
         "beta_hat"
       ],
-      "id": "6b8239e4",
+      "id": "f1af6811",
       "execution_count": null,
       "outputs": []
     },
@@ -227,7 +227,7 @@
         "\n",
         "Next, we extend our simple Poisson model to a Poisson Regression Model such that $Y_i = \\text{Poisson}(\\lambda_i)$ where $\\lambda_i = \\exp(X_i'\\beta)$. The interpretation is that the success rate of patent awards is not constant across all firms ($\\lambda$) but rather is a function of firm characteristics $X_i$. Specifically, we will use the covariates age, age squared, region, and whether the firm is a customer of Blueprinty."
       ],
-      "id": "dc691faa"
+      "id": "c8f7fc70"
     },
     {
       "cell_type": "code",
@@ -266,7 +266,7 @@
         "beta_hat = result.x\n",
         "beta_hat"
       ],
-      "id": "8f792e9f",
+      "id": "5c2a14dc",
       "execution_count": null,
       "outputs": []
     },
@@ -286,7 +286,7 @@
         "\n",
         "results_df.round(4)"
       ],
-      "id": "906ccc72",
+      "id": "444764d2",
       "execution_count": null,
       "outputs": []
     },
@@ -339,7 +339,7 @@
         "glm_model = sm.GLM(y, X, family=sm.families.Poisson()).fit()\n",
         "glm_model.summary2().tables[1].round(4)"
       ],
-      "id": "5ec5809e",
+      "id": "f2e7de57",
       "execution_count": null,
       "outputs": []
     },
@@ -372,7 +372,7 @@
         "\n",
         "::::"
       ],
-      "id": "7e78939e"
+      "id": "07a2cc7b"
     },
     {
       "cell_type": "code",
@@ -399,7 +399,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "18cc12ee",
+      "id": "fa11e32a",
       "execution_count": null,
       "outputs": []
     }
