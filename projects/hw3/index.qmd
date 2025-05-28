@@ -135,13 +135,12 @@ rm(list=setdiff(ls(), "conjoint_data"))
 The "hard part" of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer $i$, covariate $k$, and product $j$) instead of the typical 2 dimensions for cross-sectional regression models (consumer $i$ and covariate $k$). The fact that each task for each respondent has the same number of alternatives (3) helps.  In addition, we need to convert the categorical variables for brand and ads into binary variables.
 
 ```{python}
-# | echo: false
 import pandas as pd
 
 df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw3/conjoint_data.csv")
 df_encoded = pd.get_dummies(df, columns=['brand', 'ad'], drop_first=True)
 df_encoded = df_encoded.sort_values(by=['resp', 'task']).reset_index(drop=True)
-df_encoded.head()
+print(df_encoded.head())
 ```
 
 
@@ -151,7 +150,6 @@ df_encoded.head()
 We estimate the parameters of the MNL model using Maximum Likelihood. For each respondent-task combination, the probability of choosing an option is modeled using a softmax function over linear utilities. The utility is a function of product characteristics, and we estimate the parameters that maximize the likelihood of observed choices.
 
 ```{python}
-# | echo: false
 import pandas as pd
 import numpy as np
 from scipy.optimize import minimize
@@ -195,7 +193,6 @@ mle_estimates
 ## 5. Estimation via Bayesian Methods
 
 ```{python}
-# | echo: false
 import pandas as pd
 import numpy as np
 from scipy.optimize import minimize
@@ -253,17 +250,148 @@ accept_rate
 
 
 
-_todo: for at least one of the 4 parameters, show the trace plot of the algorithm, as well as the histogram of the posterior distribution._
+```{python}
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+from scipy.optimize import minimize
 
-_todo: report the 4 posterior means, standard deviations, and 95% credible intervals and compare them to your results from the Maximum Likelihood approach._
+# Extract samples for 'price' (index 0)
+price_samples = samples[:, 0]
+
+# Create trace plot and histogram
+fig, ax = plt.subplots(2, 1, figsize=(8, 6), sharex=False)
+
+# Trace plot
+ax[0].plot(price_samples, linewidth=0.6)
+ax[0].set_title("Trace Plot of Price Coefficient")
+ax[0].set_ylabel("Value")
+
+# Histogram
+ax[1].hist(price_samples, bins=40, density=True, edgecolor='black')
+ax[1].set_title("Posterior Distribution of Price Coefficient")
+ax[1].set_xlabel("Value")
+ax[1].set_ylabel("Density")
+
+plt.tight_layout()
+plt.show()
+```
+
+Below we report the posterior means, standard deviations, and 95% credible intervals for the four estimated parameters. We then compare these results to the point estimates obtained using Maximum Likelihood Estimation.
+
+```{python}
+import pandas as pd
+import numpy as np
+
+# Parameter names
+param_names = ['price', 'brand_N', 'brand_P', 'ad_Yes']
+
+# Posterior summary
+posterior_means = samples.mean(axis=0)
+posterior_sds = samples.std(axis=0)
+posterior_ci_lower = np.percentile(samples, 2.5, axis=0)
+posterior_ci_upper = np.percentile(samples, 97.5, axis=0)
+
+# Create summary DataFrame
+posterior_summary = pd.DataFrame({
+    "Parameter": param_names,
+    "Posterior Mean": posterior_means,
+    "Posterior SD": posterior_sds,
+    "95% CI Lower": posterior_ci_lower,
+    "95% CI Upper": posterior_ci_upper,
+    "MLE Estimate": mle_estimates
+})
+
+posterior_summary
+```
 
 
 
 ## 6. Discussion
 
-_todo: Suppose you did not simulate the data. What do you observe about the parameter estimates? What does $\beta_\text{Netflix} > \beta_\text{Prime}$ mean? Does it make sense that $\beta_\text{price}$ is negative?_
+Suppose we did not simulate the data, but instead received these estimates from a real-world conjoint survey. Here's how we would interpret the results:
 
-_todo: At a high level, discuss what change you would need to make in order to simulate data from --- and estimate the parameters of --- a multi-level (aka random-parameter or hierarchical) model. This is the model we use to analyze "real world" conjoint data._
+### Observations from the Estimates
+
+From both the Maximum Likelihood and Bayesian approaches, we observe the following patterns:
+
+- The coefficient on `price` is negative.
+- The coefficient for `brand_N` (Netflix) is greater than that for `brand_P` (Prime).
+- Each coefficient represents the marginal utility contribution of that feature, relative to the base level.
+
+These estimates suggest meaningful consumer preferences, even in the absence of simulation context.
+
+### Interpreting \( \beta_{\text{Netflix}} > \beta_{\text{Prime}} \)
+
+We used dummy coding where:
+- `brand_N` represents Netflix,
+- `brand_P` represents Prime,
+- and the base category (omitted) is Hulu.
+
+So, when:
+\[
+\beta_{\text{Netflix}} > \beta_{\text{Prime}}
+\]
+this implies that, holding all else constant (including price and ad exposure), consumers derive **more utility** from Netflix than from Prime. In practical terms, this means Netflix is **more likely to be chosen** than Prime when both appear as options.
+
+### Interpreting \( \beta_{\text{price}} < 0 \)
+
+The negative price coefficient is both intuitive and theoretically sound. It means:
+
+\[
+\text{As price increases, the product becomes less attractive.}
+\]
+
+A negative \( \beta_{\text{price}} \) reflects the basic economic principle that **higher prices reduce utility**, making consumers less likely to select that option. This aligns with standard expectations in consumer choice modeling.
+
+---
+
+Overall, the parameter estimates make sense and align with expected consumer behavior: people prefer lower prices, favor some brands over others, and possibly dislike ads (if that effect was also negative).
+
+
+
+In this assignment, we estimated a **standard Multinomial Logit (MNL) model**, which assumes that all respondents share the same preferences — in other words, a **fixed parameter** \( \beta \) across all individuals.
+
+However, in real-world conjoint analysis, this assumption is often too simplistic. Consumers typically have **heterogeneous preferences**, and ignoring this variation can lead to misleading or overconfident conclusions.
+
+### Simulating Data from a Hierarchical (Multi-Level) Model
+
+To simulate data from a **multi-level (random parameter) model**, we would:
+
+- Draw each respondent’s \( \beta_i \) from a **population-level distribution**, such as:
+  \[
+  \beta_i \sim \mathcal{N}(\mu, \Sigma)
+  \]
+  where \( \mu \) and \( \Sigma \) represent the **mean** and **covariance** of preferences across respondents.
+
+- Then, for each respondent \( i \), simulate their choices based on their own personalized \( \beta_i \), using the same MNL framework:
+  \[
+  P_{ij} = \frac{\exp(x_{ij}^\top \beta_i)}{\sum_k \exp(x_{ik}^\top \beta_i)}
+  \]
+
+This introduces **preference heterogeneity** into the simulation.
+
+### Estimating a Hierarchical Model
+
+To estimate this kind of model, we would need to:
+- Use **Bayesian methods** (like MCMC with Gibbs sampling or Hamiltonian Monte Carlo), or
+- Use **frequentist approximations** like **Hierarchical Bayes**, **mixed logit (MIXL)**, or **maximum simulated likelihood**.
+
+This involves:
+- Estimating both the population-level parameters (\( \mu, \Sigma \)) and
+- Inferring the individual-level \( \beta_i \)'s, often via partial pooling.
+
+### Why This Matters
+
+Hierarchical models are preferred in practice because they:
+- Provide **personalized insights** (important for targeting and segmentation),
+- Account for **variation in preferences**, and
+- Avoid overstating the confidence in a “one-size-fits-all” estimate.
+
+---
+
+In short, to move from a standard MNL to a hierarchical model, you would simulate and estimate **individual-specific coefficients**, rather than a single shared coefficient vector.
+
 
 
 
