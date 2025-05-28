@@ -152,34 +152,42 @@ We estimate the parameters of the MNL model using Maximum Likelihood. For each r
 
 ```{python}
 # | echo: false
+import pandas as pd
 import numpy as np
 from scipy.optimize import minimize
 
-X = df_encoded[['price', 'brand_N', 'brand_P', 'ad_Yes']].values
-y = df_encoded['choice'].values
+df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw3/conjoint_data.csv")
+df_encoded = pd.get_dummies(df, columns=['brand', 'ad'], drop_first=True)
+df_encoded = df_encoded.sort_values(by=['resp', 'task']).reset_index(drop=True)
 
+# Step 1: Extract features and ensure float type
+X = df_encoded[['price', 'brand_N', 'brand_P', 'ad_Yes']].astype(float).values
+y = df_encoded['choice'].astype(int).values
+
+# Step 2: Reshape for MNL panel setup
 n_alternatives = 3
 n_tasks = int(len(y) / n_alternatives)
 
 X = X.reshape((n_tasks, n_alternatives, -1))
 y = y.reshape((n_tasks, n_alternatives))
 
+# Step 3: MNL Log-likelihood
 def mnl_log_likelihood(beta):
-    beta = np.asarray(beta)
-    utilities = X @ beta
-    exp_util = np.exp(utilities - utilities.max(axis=1, keepdims=True))
+    beta = np.asarray(beta, dtype=float)
+    utilities = np.einsum('ijk,k->ij', X, beta)  # X @ beta for each task
+    exp_util = np.exp(utilities - np.max(utilities, axis=1, keepdims=True))  # stabilize
     probs = exp_util / exp_util.sum(axis=1, keepdims=True)
     chosen_probs = probs[y == 1]
-    return -np.sum(np.log(chosen_probs))
+    return -np.sum(np.log(chosen_probs + 1e-15))  # small constant to avoid log(0)
 
-
+# Step 4: Estimate with MLE
 init_beta = np.zeros(X.shape[2])
 result = minimize(mnl_log_likelihood, init_beta, method='BFGS')
 mle_estimates = result.x
 
-
 mle_estimates
 ```
+
 
 
 
