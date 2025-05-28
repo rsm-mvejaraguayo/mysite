@@ -194,13 +194,63 @@ mle_estimates
 
 ## 5. Estimation via Bayesian Methods
 
-_todo: code up a metropolis-hasting MCMC sampler of the posterior distribution. Take 11,000 steps and throw away the first 1,000, retaining the subsequent 10,000._
+```{python}
+# | echo: false
+import pandas as pd
+import numpy as np
+from scipy.optimize import minimize
+# Bayesian estimation using Metropolis-Hastings MCMC with structured priors
 
-_hint: Use N(0,5) priors for the betas on the binary variables, and a N(0,1) prior for the price beta._
+# Prior standard deviations: [price, brand_N, brand_P, ad_Yes]
+prior_sds = np.array([1.0, 5.0, 5.0, 5.0])
 
-_hint: instead of calculating post=lik*prior, you can work in the log-space and calculate log-post = log-lik + log-prior (this should enable you to re-use your log-likelihood function from the MLE section just above)_
+def log_prior(beta):
+    return -0.5 * np.sum((beta / prior_sds) ** 2)
 
-_hint: King Markov (in the video) use a candidate distribution of a coin flip to decide whether to move left or right among his islands.  Unlike King Markov, we have 4 dimensions (because we have 4 betas) and our dimensions are continuous.  So, use a multivariate normal distribution to pospose the next location for the algorithm to move to. I recommend a MNV(mu, Sigma) where mu=c(0,0,0,0) and sigma has diagonal values c(0.05, 0.05, 0.05, 0.005) and zeros on the off-diagonal.  Since this MVN has no covariances, you can sample each dimension independently (so 4 univariate normals instead of 1 multivariate normal), where the first 3 univariate normals are N(0,0.05) and the last one if N(0,0.005)._
+def log_likelihood(beta):
+    beta = np.asarray(beta, dtype=float)
+    utilities = np.einsum('ijk,k->ij', X, beta)
+    exp_util = np.exp(utilities - np.max(utilities, axis=1, keepdims=True))
+    probs = exp_util / exp_util.sum(axis=1, keepdims=True)
+    chosen_probs = probs[y == 1]
+    return np.sum(np.log(chosen_probs + 1e-15))
+
+def log_posterior(beta):
+    return log_likelihood(beta) + log_prior(beta)
+
+# MCMC parameters
+n_samples = 11000
+burn_in = 1000
+n_keep = n_samples - burn_in
+n_params = X.shape[2]
+samples = np.zeros((n_keep, n_params))
+beta_current = np.zeros(n_params)
+log_post_current = log_posterior(beta_current)
+
+# Proposal SDs: [price, brand_N, brand_P, ad_Yes]
+proposal_sds = np.array([0.005, 0.05, 0.05, 0.05])
+
+accepts = 0
+np.random.seed(42)
+
+for step in range(n_samples):
+    proposal = beta_current + np.random.normal(loc=0.0, scale=proposal_sds)
+    log_post_proposal = log_posterior(proposal)
+
+    log_accept_ratio = log_post_proposal - log_post_current
+    if np.log(np.random.rand()) < log_accept_ratio:
+        beta_current = proposal
+        log_post_current = log_post_proposal
+        if step >= burn_in:
+            accepts += 1
+    
+    if step >= burn_in:
+        samples[step - burn_in] = beta_current
+
+accept_rate = accepts / n_keep
+accept_rate
+```
+
 
 
 _todo: for at least one of the 4 parameters, show the trace plot of the algorithm, as well as the histogram of the posterior distribution._
