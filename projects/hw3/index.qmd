@@ -148,9 +148,39 @@ df_encoded.head()
 
 ## 4. Estimation via Maximum Likelihood
 
-_todo: Code up the log-likelihood function._
+We estimate the parameters of the MNL model using Maximum Likelihood. For each respondent-task combination, the probability of choosing an option is modeled using a softmax function over linear utilities. The utility is a function of product characteristics, and we estimate the parameters that maximize the likelihood of observed choices.
 
-_todo: Use `optim()` in R or `scipy.optimize()` in Python to find the MLEs for the 4 parameters ($\beta_\text{netflix}$, $\beta_\text{prime}$, $\beta_\text{ads}$, $\beta_\text{price}$), as well as their standard errors (from the Hessian). For each parameter construct a 95% confidence interval._
+```{python}
+# | echo: false
+import numpy as np
+from scipy.optimize import minimize
+
+X = df_encoded[['price', 'brand_N', 'brand_P', 'ad_Yes']].values
+y = df_encoded['choice'].values
+
+n_alternatives = 3
+n_tasks = int(len(y) / n_alternatives)
+
+X = X.reshape((n_tasks, n_alternatives, -1))
+y = y.reshape((n_tasks, n_alternatives))
+
+def mnl_log_likelihood(beta):
+    beta = np.asarray(beta)
+    utilities = X @ beta
+    exp_util = np.exp(utilities - utilities.max(axis=1, keepdims=True))
+    probs = exp_util / exp_util.sum(axis=1, keepdims=True)
+    chosen_probs = probs[y == 1]
+    return -np.sum(np.log(chosen_probs))
+
+
+init_beta = np.zeros(X.shape[2])
+result = minimize(mnl_log_likelihood, init_beta, method='BFGS')
+mle_estimates = result.x
+
+
+mle_estimates
+```
+
 
 
 
