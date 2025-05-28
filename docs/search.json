@@ -123,7 +123,7 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "Poisson Regression Examples\n\n\n\n\nMariana Vejar\nMay 27, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nA Replication of Karlan and List (2007)\n\n\n\n\nMariana Vejar\nMay 27, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nHomework 3\n\n\n\n\nMariana Vejar\nApr 11, 2025\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Poisson Regression Examples\n\n\n\n\nMariana Vejar\nMay 27, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nMultinomial Logit Model\n\n\n\n\nMariana Vejar\nMay 27, 2025\n\n\n\n\n\n\n\n\n\n\n\n\n\nA Replication of Karlan and List (2007)\n\n\n\n\nMariana Vejar\nMay 27, 2025\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "projects/hw3/index.html",
@@ -151,7 +151,7 @@
     "href": "projects/hw3/index.html#preparing-the-data-for-estimation",
     "title": "Multinomial Logit Model",
     "section": "3. Preparing the Data for Estimation",
-    "text": "3. Preparing the Data for Estimation\nThe “hard part” of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer \\(i\\), covariate \\(k\\), and product \\(j\\)) instead of the typical 2 dimensions for cross-sectional regression models (consumer \\(i\\) and covariate \\(k\\)). The fact that each task for each respondent has the same number of alternatives (3) helps. In addition, we need to convert the categorical variables for brand and ads into binary variables.\ntodo: reshape and prep the data"
+    "text": "3. Preparing the Data for Estimation\nThe “hard part” of the MNL likelihood function is organizing the data, as we need to keep track of 3 dimensions (consumer \\(i\\), covariate \\(k\\), and product \\(j\\)) instead of the typical 2 dimensions for cross-sectional regression models (consumer \\(i\\) and covariate \\(k\\)). The fact that each task for each respondent has the same number of alternatives (3) helps. In addition, we need to convert the categorical variables for brand and ads into binary variables.\n\n# | echo: false\nimport pandas as pd\n\ndf = pd.read_csv(\"/home/jovyan/Desktop/mysite/projects/hw3/conjoint_data.csv\")\ndf_encoded = pd.get_dummies(df, columns=['brand', 'ad'], drop_first=True)\ndf_encoded = df_encoded.sort_values(by=['resp', 'task']).reset_index(drop=True)\ndf_encoded.head()\n\n   resp  task  choice  price  brand_N  brand_P  ad_Yes\n0     1     1       1     28     True    False    True\n1     1     1       0     16    False    False    True\n2     1     1       0     16    False     True    True\n3     1     2       0     32     True    False    True\n4     1     2       1     16    False     True    True"
   },
   {
     "objectID": "projects/hw3/index.html#estimation-via-maximum-likelihood",
