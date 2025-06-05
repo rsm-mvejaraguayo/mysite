@@ -1,6 +1,6 @@
 ---
 title: "Key Drivers Analysis"
-author: "Your Name"
+author: "Mariana Vejar"
 date: today
 ---
 
@@ -8,12 +8,136 @@ date: today
 This post implements a few measure of variable importance, interpreted as a key drivers analysis, for certain aspects of a payment card on customer satisfaction with that payment card.
 
 
-_todo: replicate the table on slide 19 of the session 4 slides. This involves calculating pearson correlations, standardized regression coefficients, "usefulness", Shapley values for a linear regression, Johnson's relative weights, and the mean decrease in the gini coefficient from a random forest. You may use packages built into R or Python._
+## Key Drivers Analysis: What Drives Satisfaction?
 
-_If you want a challenge, either (1) implement one or more of the measures yourself. "Usefulness" is rather easy to program up. Shapley values for linear regression are a bit more work. Or (2) add additional measures to the table such as the importance scores from XGBoost._
+We aim to understand what features most influence customer satisfaction. To do so, we replicate a comprehensive feature importance analysis inspired by Session 4, Slide 19. We'll compute and compare multiple importance metrics.
 
+### Step 1: Data Preparation
 
+We begin by loading the data and selecting relevant features. The predictors include:
+- trust, build, differs, easy, appealing, rewarding, popular, service, impact
 
+We remove identifiers (`id`, `brand`) and focus on `satisfaction` as our target.
 
+```{python}
+# | echo: false
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
+# Load data
+df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
 
+# Drop identifiers and select features
+X = df.drop(columns=["brand", "id", "satisfaction"])
+y = df["satisfaction"]
+
+# Standardize predictors
+scaler = StandardScaler()
+X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+```
+
+Pearson Correlations
+
+Pearson correlations measure the strength of linear relationships between each predictor and satisfaction.
+
+```{python}
+# | echo: false
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+# Load data
+df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
+
+# Drop identifiers and select features
+X = df.drop(columns=["brand", "id", "satisfaction"])
+
+# Pearson correlation with the target
+pearson_corrs = X.corrwith(y)
+pearson_corrs.sort_values(ascending=False)
+```
+
+### Standardized Regression Coefficients
+
+To assess the relative importance of each feature, we fit a linear regression using **standardized predictors**. This ensures that coefficients are directly comparable.
+
+```{python}
+from sklearn.linear_model import LinearRegression
+import pandas as pd
+
+# Load data
+df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
+
+X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+
+# Fit the model
+linreg = LinearRegression()
+linreg.fit(X_scaled, y)
+
+# Extract and sort standardized coefficients
+std_coeffs = pd.Series(linreg.coef_, index=X.columns)
+std_coeffs.sort_values(ascending=False)
+```
+
+### Usefulness Scores
+
+Usefulness quantifies how much the model's R² drops when we remove a feature, indicating its marginal contribution.
+
+```{python}
+from sklearn.metrics import r2_score
+from sklearn.linear_model import LinearRegression
+import pandas as pd
+
+# Load data
+df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
+
+X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+
+# Fit the model
+linreg = LinearRegression()
+linreg.fit(X_scaled, y)
+
+# Full model R²
+full_r2 = r2_score(y, linreg.predict(X_scaled))
+usefulness_scores = {}
+
+# Iterate over predictors
+for col in X.columns:
+    X_reduced = X_scaled.drop(columns=[col])
+    model = LinearRegression().fit(X_reduced, y)
+    reduced_r2 = r2_score(y, model.predict(X_reduced))
+    usefulness_scores[col] = full_r2 - reduced_r2
+
+# Display sorted scores
+pd.Series(usefulness_scores).sort_values(ascending=False)
+```
+
+### Shapley Values
+
+Shapley values distribute model output among features in a way that reflects their marginal contribution across all possible subsets. They are particularly well-suited for understanding feature influence in a model-agnostic way.
+
+We compute SHAP values using the `shap` Python library on our linear regression model:
+
+```{python}
+import shap
+from sklearn.metrics import r2_score
+from sklearn.linear_model import LinearRegression
+import pandas as pd
+
+# Load data
+df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
+
+X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+
+# Fit the model
+linreg = LinearRegression()
+linreg.fit(X_scaled, y)
+
+explainer = shap.Explainer(linreg.predict, X_scaled)
+shap_values = explainer(X_scaled)
+
+# Aggregate mean absolute SHAP values
+shap_importance = pd.DataFrame({
+    'feature': X.columns,
+    'mean_abs_shap': np.abs(shap_values.values).mean(axis=0)
+}).sort_values(by='mean_abs_shap', ascending=False)
+```
