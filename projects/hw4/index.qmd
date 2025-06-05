@@ -2,142 +2,154 @@
 title: "Key Drivers Analysis"
 author: "Mariana Vejar"
 date: today
+format:
+  html:
+    toc: true
+    toc-title: "On this page"
+    toc-depth: 2
+    theme: cosmo
+    code-fold: true
+    code-summary: "Show code"
+    number-sections: true
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
+# 🧠 Introduction
 
+In this blog post, I explore two major branches of machine learning: **supervised learning**, where we aim to predict a known outcome, and **unsupervised learning**, where we aim to discover hidden patterns.
 
-This post implements a few measure of variable importance, interpreted as a key drivers analysis, for certain aspects of a payment card on customer satisfaction with that payment card.
+The assignment required implementing both methods **from scratch**, reinforcing the mathematical intuition behind model mechanics rather than relying solely on pre-built libraries. It was both challenging and deeply rewarding to see theory translate into working code.
 
+The two analyses I completed are:
+- A **Key Drivers Analysis** (supervised ML), identifying what factors most influence customer satisfaction
+- A **K-Means Clustering** (unsupervised ML), segmenting penguins based on physical characteristics
 
-## Key Drivers Analysis: What Drives Satisfaction?
+# 📈 Part 1: Key Drivers Analysis (Supervised ML)
 
-We aim to understand what features most influence customer satisfaction. To do so, we replicate a comprehensive feature importance analysis inspired by Session 4, Slide 19. We'll compute and compare multiple importance metrics.
+This section implements multiple variable importance techniques to identify which features most influence satisfaction with a payment card.
 
-### Step 1: Data Preparation
-
-We begin by loading the data and selecting relevant features. The predictors include:
-- trust, build, differs, easy, appealing, rewarding, popular, service, impact
-
-We remove identifiers (`id`, `brand`) and focus on `satisfaction` as our target.
+## 📦 Data Preparation
 
 ```{python}
-# | echo: false
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+import numpy as np
 
-# Load data
-df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
-
-# Drop identifiers and select features
+df = pd.read_csv("data_for_drivers_analysis.csv")
 X = df.drop(columns=["brand", "id", "satisfaction"])
 y = df["satisfaction"]
 
-# Standardize predictors
 scaler = StandardScaler()
 X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
-```
 
-Pearson Correlations
+pearson_corrs = X.corrwith(y).sort_values(ascending=False)
+pearson_corrs
 
-Pearson correlations measure the strength of linear relationships between each predictor and satisfaction.
-
-```{python}
-# | echo: false
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-
-# Load data
-df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
-
-# Drop identifiers and select features
-X = df.drop(columns=["brand", "id", "satisfaction"])
-
-# Pearson correlation with the target
-pearson_corrs = X.corrwith(y)
-pearson_corrs.sort_values(ascending=False)
-```
-
-### Standardized Regression Coefficients
-
-To assess the relative importance of each feature, we fit a linear regression using **standardized predictors**. This ensures that coefficients are directly comparable.
-
-```{python}
-from sklearn.linear_model import LinearRegression
-import pandas as pd
-
-# Load data
-df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
-
-X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
-
-# Fit the model
 linreg = LinearRegression()
 linreg.fit(X_scaled, y)
+std_coeffs = pd.Series(linreg.coef_, index=X.columns).sort_values(ascending=False)
+std_coeffs
 
-# Extract and sort standardized coefficients
-std_coeffs = pd.Series(linreg.coef_, index=X.columns)
-std_coeffs.sort_values(ascending=False)
-```
-
-### Usefulness Scores
-
-Usefulness quantifies how much the model's R² drops when we remove a feature, indicating its marginal contribution.
-
-```{python}
-from sklearn.metrics import r2_score
-from sklearn.linear_model import LinearRegression
-import pandas as pd
-
-# Load data
-df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
-
-X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
-
-# Fit the model
-linreg = LinearRegression()
-linreg.fit(X_scaled, y)
-
-# Full model R²
 full_r2 = r2_score(y, linreg.predict(X_scaled))
 usefulness_scores = {}
 
-# Iterate over predictors
 for col in X.columns:
     X_reduced = X_scaled.drop(columns=[col])
-    model = LinearRegression().fit(X_reduced, y)
-    reduced_r2 = r2_score(y, model.predict(X_reduced))
+    reduced_model = LinearRegression().fit(X_reduced, y)
+    reduced_r2 = r2_score(y, reduced_model.predict(X_reduced))
     usefulness_scores[col] = full_r2 - reduced_r2
 
-# Display sorted scores
-pd.Series(usefulness_scores).sort_values(ascending=False)
-```
+usefulness_series = pd.Series(usefulness_scores).sort_values(ascending=False)
+usefulness_series
 
-### Shapley Values
-
-Shapley values distribute model output among features in a way that reflects their marginal contribution across all possible subsets. They are particularly well-suited for understanding feature influence in a model-agnostic way.
-
-We compute SHAP values using the `shap` Python library on our linear regression model:
-
-```{python}
 import shap
-from sklearn.metrics import r2_score
-from sklearn.linear_model import LinearRegression
-import pandas as pd
-
-# Load data
-df = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/data_for_drivers_analysis.csv")
-
-X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
-
-# Fit the model
-linreg = LinearRegression()
-linreg.fit(X_scaled, y)
 
 explainer = shap.Explainer(linreg.predict, X_scaled)
 shap_values = explainer(X_scaled)
-
-# Aggregate mean absolute SHAP values
 shap_importance = pd.DataFrame({
     'feature': X.columns,
     'mean_abs_shap': np.abs(shap_values.values).mean(axis=0)
 }).sort_values(by='mean_abs_shap', ascending=False)
+
+shap_importance
+
+from numpy.linalg import eig
+
+R = np.corrcoef(X_scaled.T)
+eigen_vals, eigen_vecs = eig(R)
+lambda_matrix = eigen_vecs @ np.diag(np.sqrt(eigen_vals))
+beta_raw = lambda_matrix.T @ X_scaled.T @ y
+raw_weights = (lambda_matrix @ beta_raw) ** 2
+relative_weights = raw_weights / sum(raw_weights)
+johnson_weights = pd.Series(relative_weights, index=X.columns).sort_values(ascending=False)
+johnson_weights
+
+from sklearn.ensemble import RandomForestRegressor
+
+rf = RandomForestRegressor(n_estimators=100, random_state=42)
+rf.fit(X_scaled, y)
+rf_importances = pd.Series(rf.feature_importances_, index=X.columns).sort_values(ascending=False)
+rf_importances
+
+summary_table = pd.DataFrame({
+    "Pearson Corr": pearson_corrs,
+    "Standardized Coef": std_coeffs,
+    "Usefulness": usefulness_series,
+    "Johnson Weight": johnson_weights,
+    "SHAP": shap_importance.set_index("feature")["mean_abs_shap"],
+    "Gini Importance": rf_importances
+}).round(4).sort_values("Johnson Weight", ascending=False)
+
+summary_table
+
+penguins = pd.read_csv("/home/jovyan/Desktop/mysite/projects/hw4/palmer_penguins.csv")
+features = ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"]
+penguins = penguins[features + ["species"]].dropna()
+
+scaler = StandardScaler()
+X_penguins = pd.DataFrame(scaler.fit_transform(penguins[features]), columns=features)
+
+def initialize_centroids(X, k):
+    return X.sample(k, random_state=42).to_numpy()
+
+def assign_clusters(X, centroids):
+    distances = np.linalg.norm(X.to_numpy()[:, np.newaxis] - centroids, axis=2)
+    return np.argmin(distances, axis=1)
+
+def update_centroids(X, labels, k):
+    return np.array([X[labels == i].mean(axis=0) for i in range(k)])
+
+def kmeans(X, k=3, max_iters=100, tol=1e-4):
+    centroids = initialize_centroids(X, k)
+    for _ in range(max_iters):
+        labels = assign_clusters(X, centroids)
+        new_centroids = update_centroids(X, labels, k)
+        if np.all(np.linalg.norm(new_centroids - centroids, axis=1) < tol):
+            break
+        centroids = new_centroids
+    return labels, centroids
+
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+labels, centroids = kmeans(X_penguins, k=3)
+X_pca = PCA(n_components=2).fit_transform(X_penguins)
+
+plt.figure(figsize=(8,6))
+plt.scatter(X_pca[:,0], X_pca[:,1], c=labels, cmap='viridis', s=50)
+plt.title("K-Means Clustering of Penguins (PCA-reduced)")
+plt.xlabel("PC 1")
+plt.ylabel("PC 2")
+plt.grid(True)
+plt.show()
+
+from sklearn.metrics import adjusted_rand_score
+
+true_labels = pd.factorize(penguins["species"])[0]
+ari = adjusted_rand_score(true_labels, labels)
+print("Adjusted Rand Index (vs. true species):", round(ari, 3))
 ```
