@@ -188,7 +188,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
-<div id="80d68e3f" class="cell" data-execution_count="1">
+<div id="01dd014b" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 
@@ -590,12 +590,12 @@ Variable Definitions
 <section id="balance-test" class="level3">
 <h3 class="anchored" data-anchor-id="balance-test">Balance Test</h3>
 <p>I assess whether randomization produced statistically similar groups by testing balance on pre-treatment variables. Here we focus on <code>mrm2</code>, which captures the number of months since the last donation.</p>
-<div id="6bcd4ded" class="cell" data-execution_count="2">
+<div id="f1a0a2ef" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>(-0.11953155228177251, 0.9048549631450832)</code></pre>
 </div>
 </div>
-<div id="dbe5d598" class="cell" data-execution_count="3">
+<div id="4fc5ca9d" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display" data-execution_count="3">
 <table class="simpletable caption-top table table-sm table-striped small" data-quarto-postprocess="true">
 <tbody>
@@ -640,7 +640,7 @@ Variable Definitions
 <p>Table 1 in Karlan &amp; List (2007) serves a similar purpose: it demonstrates that observed covariates are balanced across groups, supporting the credibility of causal claims. Including such a table — and running our own check — assures readers that any observed treatment effects are not artifacts of selection bias.</p>
 <section id="charitable-contribution-made" class="level3">
 <h3 class="anchored" data-anchor-id="charitable-contribution-made">Charitable Contribution Made</h3>
-<div id="87417d1d" class="cell" data-execution_count="4">
+<div id="aecfd53a" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -654,12 +654,12 @@ Variable Definitions
 <section id="does-a-match-increase-donations" class="level3">
 <h3 class="anchored" data-anchor-id="does-a-match-increase-donations">Does a Match Increase Donations?</h3>
 <p>I now test whether the presence of a matching grant increases the probability of giving. This replicates part of Table 2A in the original study.</p>
-<div id="6cbdcf9b" class="cell" data-execution_count="5">
+<div id="aa77ab01" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>(-3.2094621908279835, 0.0013309823450914173)</code></pre>
 </div>
 </div>
-<div id="f6f6e75f" class="cell" data-execution_count="6">
+<div id="1f2777b4" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
@@ -706,7 +706,7 @@ Variable Definitions
 <section id="probit-regression-likelihood-of-donation" class="level3">
 <h3 class="anchored" data-anchor-id="probit-regression-likelihood-of-donation">Probit Regression: Likelihood of Donation</h3>
 <p>To complement the linear model, we estimate a probit regression to model the likelihood of donation:</p>
-<div id="473c97e9" class="cell" data-execution_count="7">
+<div id="b0fcb402" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
@@ -754,7 +754,7 @@ Variable Definitions
 <section id="differences-between-match-rates" class="level3">
 <h3 class="anchored" data-anchor-id="differences-between-match-rates">Differences between Match Rates</h3>
 <p>Next, I assess the effectiveness of different sizes of matched donations on the response rate.</p>
-<div id="7d2b575a" class="cell" data-execution_count="8">
+<div id="8d30d85d" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>TtestResult(statistic=-1.0150174470156275, pvalue=0.31010856527625774, df=22215.0529778684)</code></pre>
 </div>
@@ -764,7 +764,7 @@ Variable Definitions
 <section id="regression-do-larger-match-ratios-matter" class="level3">
 <h3 class="anchored" data-anchor-id="regression-do-larger-match-ratios-matter">Regression: Do Larger Match Ratios Matter?</h3>
 <p>I now run a regression using match ratio as a categorical variable (1:1 as the baseline):</p>
-<div id="ec49feb7" class="cell" data-execution_count="9">
+<div id="eab44681" class="cell" data-execution_count="9">
 <div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
@@ -817,7 +817,7 @@ Variable Definitions
 </div>
 <p>The estimated donation rate for the 1:1 match is 2.07%. The 2:1 and 3:1 match rates increased this by only 0.19 and 0.20 percentage points respectively — neither of which is statistically significant. This supports the authors’ conclusion that <strong>larger match ratios do not meaningfully change giving behavior</strong>.</p>
 <p>I calculate the response rate differences between match ratios both directly and via regression:</p>
-<div id="6e622579" class="cell" data-execution_count="10">
+<div id="03d25e9b" class="cell" data-execution_count="10">
 <div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>(0.0018842510217149944,
  0.00010002398025293902,
@@ -830,12 +830,12 @@ Variable Definitions
 <section id="size-of-charitable-contribution" class="level3">
 <h3 class="anchored" data-anchor-id="size-of-charitable-contribution">Size of Charitable Contribution</h3>
 <p>In this subsection, I analyze the effect of the size of matched donation on the size of the charitable contribution.</p>
-<div id="0d440402" class="cell" data-execution_count="11">
+<div id="9842cbc7" class="cell" data-execution_count="11">
 <div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>TtestResult(statistic=-1.9182618934467577, pvalue=0.05508566528918335, df=36216.05660774625)</code></pre>
 </div>
 </div>
-<div id="15141a92" class="cell" data-execution_count="12">
+<div id="2cd3a14e" class="cell" data-execution_count="12">
 <div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
@@ -883,12 +883,12 @@ Variable Definitions
 <section id="conditional-on-giving-do-donors-give-more" class="level3">
 <h3 class="anchored" data-anchor-id="conditional-on-giving-do-donors-give-more">Conditional on Giving: Do Donors Give More?</h3>
 <p>Next, I limit our sample to individuals who gave and repeat our analysis.</p>
-<div id="8991ab3b" class="cell" data-execution_count="13">
+<div id="1cf04f45" class="cell" data-execution_count="13">
 <div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>TtestResult(statistic=0.5846089794983359, pvalue=0.5590471865673547, df=557.4599304243758)</code></pre>
 </div>
 </div>
-<div id="6278acde" class="cell" data-execution_count="14">
+<div id="c9b8a1dd" class="cell" data-execution_count="14">
 <div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
@@ -936,7 +936,7 @@ Variable Definitions
 </section>
 <section id="distribution-of-donation-amounts-among-donors" class="level3">
 <h3 class="anchored" data-anchor-id="distribution-of-donation-amounts-among-donors">Distribution of Donation Amounts Among Donors</h3>
-<div id="c6a9b448" class="cell" data-execution_count="15">
+<div id="9a235c65" class="cell" data-execution_count="15">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -956,7 +956,7 @@ Variable Definitions
 <section id="law-of-large-numbers" class="level3">
 <h3 class="anchored" data-anchor-id="law-of-large-numbers">Law of Large Numbers</h3>
 <p>To demonstrate how the sample average converges to the true treatment effect, I simulate donation behavior under the assumed probabilities (p=0.018 for control, p=0.022 for treatment):</p>
-<div id="ce2768b6" class="cell" data-execution_count="16">
+<div id="a442ff2f" class="cell" data-execution_count="16">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -970,7 +970,7 @@ Variable Definitions
 <section id="central-limit-theorem" class="level3">
 <h3 class="anchored" data-anchor-id="central-limit-theorem">Central Limit Theorem</h3>
 <p>We simulate the average treatment effect at sample sizes of 50, 200, 500, and 1000. For each size, we run 1,000 simulations, where we take <code>n</code> random draws from both control and treatment distributions and compute the difference in means.</p>
-<div id="8cbd3b33" class="cell" data-execution_count="17">
+<div id="4a0d17cc" class="cell" data-execution_count="17">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
